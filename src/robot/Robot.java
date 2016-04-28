@@ -1,7 +1,7 @@
 package robot;
 
 import java.util.ArrayList;
-
+import java.util.Random;
 import static robot.Direction.*;
 import static robot.Instruction.*;
 
@@ -11,6 +11,8 @@ public class Robot {
     private Direction direction;
     private boolean isLanded;
     private RoadBook roadBook;
+    private Battery battery;
+    private LandSensor landSensor;
     /**
      * Energie ideale consommee pour la realisation d'une action. 
      */
@@ -23,6 +25,9 @@ public class Robot {
     public Robot(double energyConsumption) {
         isLanded = false;
         this.energyConsumption = energyConsumption;
+        this.battery = new Battery();
+        battery.setUp();
+        this.landSensor = new LandSensor(new Random());
     }
 
     public void land(Coordinates landPosition) {
@@ -48,12 +53,23 @@ public class Robot {
 
     public void moveForward() throws UnlandedRobotException {
         if (!isLanded) throw new UnlandedRobotException();
-        MapTools.nextForwardPosition(position, direction);
+        Coordinates nextPos = MapTools.nextForwardPosition(position, direction);
+        double energyCoefficient = landSensor.getPointToPointEnergyCoefficient(nextPos,position);
+        boolean enougthEnergy = false;
+        while(!enougthEnergy){
+            try{
+                battery.use(energyCoefficient*energyConsumption);
+                enougthEnergy = true;
+            } catch (InsufficientChargeException e) {
+                e.printStackTrace();
+            }
+        }
+        position = nextPos;
     }
 
     public void moveBackward() throws UnlandedRobotException {
         if (!isLanded) throw new UnlandedRobotException();
-        MapTools.nextForwardPosition(position, direction);
+        position = MapTools.nextBackwardPosition(position, direction);
     }
 
     public void turnLeft() throws UnlandedRobotException {
@@ -75,7 +91,7 @@ public class Robot {
             Instruction nextInstruction = roadBook.next();
             if (nextInstruction == FORWARD) moveForward();
             else if (nextInstruction == BACKWARD) moveBackward();
-            else if (nextInstruction == TURNLEFT) turnRight();
+            else if (nextInstruction == TURNLEFT) turnLeft();
             else if (nextInstruction == TURNRIGHT) turnRight();
         }
     }

@@ -6,7 +6,7 @@ import static java.lang.Thread.sleep;
 
 public class BatteryUnitTest {
 
-    @Test
+	@Test
     public void testCharge() {
         Battery cell = new Battery();
         assertEquals(100f, cell.getChargeLevel(),0);
@@ -38,12 +38,14 @@ public class BatteryUnitTest {
         assertEquals(111f,cell.getChargeLevel(),0);
     }
 
+    /**
+     * 
+     */
     @Test
-    public void timeToSufficientEnnergy(){
+    public void testtimeToSufficientEnnergy(){
         Battery cell = new Battery();
         assertEquals(100f,cell.getChargeLevel(),0);
-        long clockTime = cell.timeToSufficientCharge(111);
-        assertEquals(1000,clockTime);
+        assertEquals(1000,cell.timeToSufficientCharge(111));
     }
   
 }

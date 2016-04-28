@@ -4,6 +4,7 @@ import java.util.Random;
 
 public class LandSensor {
 	private Random random ;
+	private Double val;
 	
 	public LandSensor(Random r){
 		this.random = r;
@@ -18,12 +19,23 @@ public class LandSensor {
 	 * @return facteur de modulation de l'energie consommee dans des conditions ideales 
 	 */
     public double getPointToPointEnergyCoefficient(Coordinates coordinate1, Coordinates coordinate2) {
-        
+        val=random.nextDouble();
         double distance = distance(coordinate1, coordinate2);
-        return 1 + distance / (distance *random.nextDouble());
+        return 1 + distance / (distance *val);
     }
 
     public double distance(Coordinates coordinate1, Coordinates coordinate2) {
         return Math.sqrt(Math.pow(coordinate1.getX()-coordinate2.getX(), 2) + Math.pow(coordinate1.getX()-coordinate2.getX(),2));
     }
+
+
+	public Double getVal() {
+		return val;
+	}
+
+
+	public void setVal(Double val) {
+		this.val = val;
+	}
+    
 }
